@@ -51,8 +51,8 @@ function gene_boxplot(sce, my_gene)
             text(1+0.02, max_val(i) - 0.2, ['Max: ', num2str(max_val(i))]);
             text(1+0.02, min_val(i) + 0.05, ['Min: ', num2str(min_val(i))]);
             text(1+0.02, median_val(i) + 0.3, ['Median: ', num2str(median_val(i))]);
-            text(1-0.15, q3(i) - 0.2, ['Q3: ', num2str(q3(i))]);
-            text(1-0.15, q1(i) + 0.2, ['Q1: ', num2str(q1(i))]);
+            text(1-0.15, q3(i) - 0.05, ['Q3: ', num2str(q3(i))]);
+            text(1-0.15, q1(i) + 0.05, ['Q1: ', num2str(q1(i))]);
         end
         % Create boxplot
         hold off;  % To add text on top of the plot
