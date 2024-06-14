@@ -61,6 +61,7 @@ function  sce = leiden_annotation(sce, method, species)
     if status ~= 0
         disp('Error running the Python script:');
         disp(cmdout);
+        return;
     else
         % Load the clustering results
         clusters = jsondecode(fileread('clusters.json'));
@@ -76,12 +77,12 @@ function  sce = leiden_annotation(sce, method, species)
     end
 
     % Assign clustering results to the SCE object
-    sce.c_cluster_id = clusters;
+    sce.c_cluster_id = clusters + 1;
 
     % Embed cells and assign cell types
     tic;
-    sce = sce.embedcells('umap3d', true, false, 3);
-    %sce = sce.embedcells('umap2d', true, false, 2);
+    %sce = sce.embedcells('umap3d', true, false, 3);
+    sce = sce.embedcells('umap2d', true, false, 2);
     fprintf("Annotating species %s \n\n", species)
     sce= sce.assigncelltype(species, false);
     time_assign = toc;

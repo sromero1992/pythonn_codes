@@ -11,10 +11,11 @@ cells_per_clus = 250;
 sce = sce.qcfilter;
 sce = sce.embedcells('umap3d', true, false, 3);
 if cells_per_clus ~= 0
-    nclusters = round(sce.numcells/cells_per_clus );
-    clust_type = "kmeans";
-    fprintf("Working on %d clusters %s \n",nclusters, clust_type);
-    sce = sce.clustercells(nclusters, clust_type, true);
+    % nclusters = round(sce.numcells/cells_per_clus );
+    % clust_type = "kmeans";
+    % fprintf("Working on %d clusters %s \n",nclusters, clust_type);
+    % sce = sce.clustercells(nclusters, clust_type, true);
+    sce = leiden_annotation(sce, 'knn', 'mouse');
 else
     nclusters = length(unique(sce.c_cluster_id));
     fprintf("Working on %d clusters and NO recluster\n", nclusters);
@@ -85,18 +86,18 @@ for iclus = 1:nclus
     T = sortrows(T,"DiffDist","descend");
 
     % Get only "Up-regulated" genes in favor of ith-cluster by sign direction
-    % test_val = [1.0 0.5 0.2 0.1 0];
-    % for ival = 1:5
-    %     idx = table2array(T(:,18)) > test_val(ival);
-    %     if sum(idx) < 10
-    %         continue;
-    %     else
-    %         %fprintf("success???")
-    %         T = T(idx, : );
-    %         break;
-    %     end
-    % end
-    idx = table2array(T(:,18)) > 0;
+    test_val = [1.0 0.5 0.2 0.1 0];
+    for ival = 1:5
+        idx = table2array(T(:,18)) > test_val(ival);
+        if sum(idx) < 10
+            continue;
+        else
+            %fprintf("success???")
+            T = T(idx, : );
+            break;
+        end
+    end
+    %idx = table2array(T(:,18)) > 0;
     T = T(idx, : );
 
     % After scored and ordered
@@ -156,6 +157,7 @@ if reduce_clusters
     
     % Second Degree: Intersection of intersections
     ieq = 1;
+    keq_redux = 0;
     max_eq = size(equi_info, 1);
     eq_genes_final = strings(alloc, max_genes0);
     cluster_red_id = zeros(alloc, 1);
@@ -214,17 +216,18 @@ if reduce_clusters
                 equi_info(meq, 1) = equi_info(meq, 2);
             end
         end
-        
-        kclus = kclus + 1;
-        cluster_red_id(kclus) = equi_info(ieq, 1);
-        eq_genes_final(kclus, 1:length(equi_genes_tmp)) = equi_genes_tmp;
+        keq_redux = keq_redux + 1;
+        % Store cluster belonging to reduction
+        cluster_red_id(keq_redux) = equi_info(ieq, 1);
+        % Store genes that intersect (AnB)n(CnD)
+        eq_genes_final(keq_redux, 1:length(equi_genes_tmp)) = equi_genes_tmp;
         ieq = max(jeq) + 1;
         isgoing = ieq < max_eq;
     end
     
     % Trim final arrays
-    eq_genes_final = eq_genes_final(1:kclus, :);
-    cluster_red_id = cluster_red_id(1:kclus);
+    eq_genes_final = eq_genes_final(1:keq_redux, :);
+    cluster_red_id = cluster_red_id(1:keq_redux);
     
     % % Third Degree: Additional merging based on common genes
     % min_genes = 3;
