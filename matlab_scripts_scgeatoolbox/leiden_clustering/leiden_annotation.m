@@ -15,7 +15,10 @@ function  sce = leiden_annotation(sce, method, species)
     fprintf("Leiden annotation with method: %s \n", method);
 
     % Set the Python environment (Python 3.11)
+    % Windoes format
     env_bin = 'C:\Users\ssromerogon\.conda\envs\scanpy_env_311\python.exe';
+    % Linux format
+    env_bin = "/home/ssromerogon/packages/scanpy_env/bin/python3";
     pe = pyenv('Version', env_bin);
     
     % Check if the environment is loaded
