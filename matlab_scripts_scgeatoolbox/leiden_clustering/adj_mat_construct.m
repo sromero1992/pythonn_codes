@@ -25,10 +25,11 @@ function adjX = adj_mat_construct(sce, method, K)
 
     % Perform PCA up to top 50 components
     %X = svdpca(X, 50, 'random'); % Actually faster but looks different...
-    X = svdpca(X, 50, 'svd');
+    %X = svdpca(X, 50, 'svd');
+    [U, ~, ~] = svds(X', 50);
+    X = X * U;
     time_prep = toc;
     fprintf("Time for preparing data: %f \n", time_prep);
-
 
     % Compute pairwise cosine similarity
     tic;

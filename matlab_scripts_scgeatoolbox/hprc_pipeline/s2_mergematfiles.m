@@ -20,16 +20,17 @@ sce=sc_mergesces(SCE);
 % QC filtering stringent
 sce = sce.qcfilter;
 % Embedding cells
-%use_hvgs = false;
-%force_write = true;
-%sce = sce.embedcells('tsne3d', force_write, use_hvgs, 3);
+use_hvgs = false;
+force_write = true;
+emb_type ='umap3d';% 'tsne3d';
+sce = sce.embedcells(emb_type, force_write, use_hvgs, 3);
 % Clusters cells
 % Method to cluster cells
-%method = 'kmeans'; % can be snndpc as well
+method = 'kmeans'; % can be snndpc as well
 %% number of cluster per cel default is k = ceil( sce.NumCells/100); approx 100 cells per cluster...
-%k = ceil(sce.NumCells/500); 
-%sce = sce.clustercells(k, 'kmeans', true);
+k = ceil(sce.NumCells/500); 
+sce = sce.clustercells(k, 'kmeans', true);
 %% Annotate cells with panglao DB 
-%species = 'mouse';
-%sce = sce.assigncelltype(speciesid, false);
+species = 'mouse';
+sce = sce.assigncelltype(species, false);
 save('sce_merged','sce','-v7.3');
