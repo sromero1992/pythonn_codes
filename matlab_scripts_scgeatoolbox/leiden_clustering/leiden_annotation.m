@@ -16,9 +16,10 @@ function  sce = leiden_annotation(sce, method, species)
 
     % Set the Python environment (Python 3.11)
     % Windoes format
-    env_bin = 'C:\Users\ssromerogon\.conda\envs\scanpy_env_311\python.exe';
+    %env_bin = 'C:\Users\ssromerogon\.conda\envs\scanpy_env_311\python.exe';
+    env_bin = 'F:\Anaconda\envs\scanpy_env\python.exe';
     % Linux format
-    env_bin = "/home/ssromerogon/packages/scanpy_env/bin/python3";
+    %env_bin = "/home/ssromerogon/packages/scanpy_env/bin/python3";
     pe = pyenv('Version', env_bin);
     
     % Check if the environment is loaded
@@ -52,7 +53,7 @@ function  sce = leiden_annotation(sce, method, species)
     python_script = 'run_leiden.py';
     
     % Call the Python script with the adjacency matrix file as argument
-    system_command = sprintf('%s %s adjX.txt', python_executable, python_script);
+    system_command = sprintf('%s %s %s', python_executable, python_script, adj_file );
     [status, cmdout] = system(system_command);
 
     % Clean up the temporary adjacency matrix file
@@ -86,8 +87,10 @@ function  sce = leiden_annotation(sce, method, species)
     tic;
     %sce = sce.embedcells('umap3d', true, false, 3);
     sce = sce.embedcells('umap2d', true, false, 2);
-    fprintf("Annotating species %s \n\n", species)
-    sce= sce.assigncelltype(species, false);
+    %fprintf("Annotating species %s \n\n", species)
+    if ~isempty(species)
+        %sce= sce.assigncelltype(species, false);
+    end
     time_assign = toc;
     fprintf("Time for cell annotation and embedding: %f \n", time_assign);
 end

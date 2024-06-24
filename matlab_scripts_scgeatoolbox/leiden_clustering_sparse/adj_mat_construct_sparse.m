@@ -1,4 +1,4 @@
-function adjX = adj_mat_construct(sce, method, K)
+function adjX = adj_mat_construct_sparse(sce, method, K)
     % INPUT:
     % sce -------> SCE object 
     % method ----> Neighbor method (knn or mnn)
