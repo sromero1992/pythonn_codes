@@ -16,8 +16,8 @@ function  sce = leiden_annotation_sparse(sce, method, species)
 
     % Set the Python environment (Python 3.11)
     % Windoes format
-    %env_bin = 'C:\Users\ssromerogon\.conda\envs\scanpy_env_311\python.exe';
-    env_bin = 'F:\Anaconda\envs\scanpy_env\python.exe';
+    env_bin = 'C:\Users\ssromerogon\.conda\envs\scanpy_env_311\python.exe';
+    %env_bin = 'F:\Anaconda\envs\scanpy_env\python.exe';
     % Linux format
     %env_bin = "/home/ssromerogon/packages/scanpy_env/bin/python3";
     pe = pyenv('Version', env_bin);
@@ -43,16 +43,19 @@ function  sce = leiden_annotation_sparse(sce, method, species)
         otherwise
             error('Unknown method: %s. Method should be either ''mnn'' or ''knn''.', method);
     end
-
+    disp(size(adjX));
     % Save the adjacency matrix to a text file
     adj_file = 'adjX.txt';
     [i, j, val] = find(adjX);
     writematrix([i, j, val], adj_file, 'Delimiter', 'tab');
     clear adjX i j val;
+    
     % Path to the Python executable and the script
     python_executable = env_bin;  
-    python_script = 'run_leiden.py';
-    
+    leiden_wd = which('leiden_annotation_sparse');
+    leiden_wd = erase(leiden_wd,'leiden_annotation_sparse.m');
+    python_script = strcat(leiden_wd, 'run_leiden.py');
+
     % Call the Python script with the adjacency matrix file as argument
     system_command = sprintf('%s %s %s', python_executable, python_script, adj_file );
     [status, cmdout] = system(system_command);
@@ -86,10 +89,13 @@ function  sce = leiden_annotation_sparse(sce, method, species)
 
     % Embed cells and assign cell types
     tic;
-    %sce = sce.embedcells('umap3d', true, false, 3);
-    sce = sce.embedcells('umap2d', true, false, 2);
-    %fprintf("Annotating species %s \n\n", species)
-    %sce= sce.assigncelltype(species, false);
+    sce = sce.embedcells('umap3d', true, false, 3);
+    %rng('default');
+    %sce = sce.embedcells('tsne3d', true, false, 3);
+    if ~isempty(species)
+        fprintf("Annotating species %s \n\n", species)
+        sce= sce.assigncelltype(species, false);
+    end
     time_assign = toc;
     fprintf("Time for cell annotation and embedding: %f \n", time_assign);
 end

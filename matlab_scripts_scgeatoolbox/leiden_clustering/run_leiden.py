@@ -15,7 +15,7 @@ if not os.path.exists(input_file):
 
 # Load adjacency matrix
 try:
-    adjX = np.loadtxt(input_file)
+    adjX = np.loadtxt(input_file, delimiter = '\t')
     print(f"Adjacency matrix shape: {adjX.shape}")
 except Exception as e:
     print(f"Error loading adjacency matrix: {e}")
@@ -28,7 +28,6 @@ try:
 
     # Debug: Print the number of vertices and edges in the graph
     print(f"Graph has {graph.vcount()} vertices and {graph.ecount()} edges")
-
 except Exception as e:
     print(f"Error creating graph: {e}")
     sys.exit(1)

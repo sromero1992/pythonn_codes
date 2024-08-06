@@ -16,8 +16,8 @@ function  sce = leiden_annotation(sce, method, species)
 
     % Set the Python environment (Python 3.11)
     % Windoes format
-    %env_bin = 'C:\Users\ssromerogon\.conda\envs\scanpy_env_311\python.exe';
-    env_bin = 'F:\Anaconda\envs\scanpy_env\python.exe';
+    env_bin = 'C:\Users\ssromerogon\.conda\envs\scanpy_env_311\python.exe';
+    %env_bin = 'F:\Anaconda\envs\scanpy_env\python.exe';
     % Linux format
     %env_bin = "/home/ssromerogon/packages/scanpy_env/bin/python3";
     pe = pyenv('Version', env_bin);
@@ -43,11 +43,13 @@ function  sce = leiden_annotation(sce, method, species)
         otherwise
             error('Unknown method: %s. Method should be either ''mnn'' or ''knn''.', method);
     end
-
+    disp(size(adjX));
     % Save the adjacency matrix to a text file
     adj_file = 'adjX.txt';
-    save(adj_file, 'adjX', '-ascii');
-    
+    writematrix(adjX, adj_file, 'Delimiter', 'tab');
+    %writematrix(adjX, adj_file, 'Delimiter', '\t', 'WriteMode', 'overwrite', 'Format', '%f');
+    clear adjX;
+
     % Path to the Python executable and the script
     python_executable = env_bin;  
     python_script = 'run_leiden.py';
@@ -86,10 +88,11 @@ function  sce = leiden_annotation(sce, method, species)
     % Embed cells and assign cell types
     tic;
     %sce = sce.embedcells('umap3d', true, false, 3);
-    sce = sce.embedcells('umap2d', true, false, 2);
-    %fprintf("Annotating species %s \n\n", species)
+    %rng('default');
+    sce = sce.embedcells('umap3d', true, false);
     if ~isempty(species)
-        %sce= sce.assigncelltype(species, false);
+        fprintf("Annotating species %s \n\n", species)
+        sce= sce.assigncelltype(species, false);
     end
     time_assign = toc;
     fprintf("Time for cell annotation and embedding: %f \n", time_assign);

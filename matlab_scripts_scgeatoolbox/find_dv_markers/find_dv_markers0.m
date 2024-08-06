@@ -1,7 +1,7 @@
 function sce = find_dv_markers0(sce, fname)
     sce = sce.qcfilter;
     %sce = sce.embedcells('umap3d', true, false, 3);
-    sce = leiden_annotation(sce, 'knn', 'mouse');
+    sce = leiden_annotation_sparse(sce, 'knn', 'mouse');
     clusters = unique(sce.c_cluster_id);
     nclus = size(clusters,1);
     
