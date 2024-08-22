@@ -1,5 +1,5 @@
 function [T1, T2] = sce_circ_phase_estimation(sce, tmeta,  rm_low_conf, period12, ...
-                                    custom_genelist, custom_celltype)
+                                    custom_genelist, cust_cells)
     tic;
     rng('default');
     % old_labels = ["1La" "2La" "3La" "4La" "5Da" "6Da" "7Da" "8Da"]';
@@ -10,7 +10,7 @@ function [T1, T2] = sce_circ_phase_estimation(sce, tmeta,  rm_low_conf, period12
     if nargin < 3 || isempty(rm_low_conf); rm_low_conf = true; end
     if nargin < 4 || isempty(period12); period12 = false; end
     if nargin < 5 || isempty(custom_genelist); custom_genelist = []; end
-    if nargin < 6 || isempty(custom_celltype); custom_celltype = []; end
+    if nargin < 6 || isempty(cust_cells); cust_cells = []; end
 
     if period12 
         disp( "Circadian identification with 12 hrs period...")
@@ -58,8 +58,8 @@ function [T1, T2] = sce_circ_phase_estimation(sce, tmeta,  rm_low_conf, period12
     for icell_type = 1:ncell_types   
         % Extract count matrix for ith cell type
         cell_type = cell_type_list(icell_type);
-        if ~isempty(custom_celltype)
-            if ~ismember(cell_type, custom_celltype); continue; end
+        if ~isempty(cust_cells)
+            if ~ismember(cell_type, cust_cells); continue; end
         end
         % Count matrix only for cell_type
         idx = find(sce.c_cell_type_tx == cell_type);
@@ -296,7 +296,10 @@ function [T1, T2] = sce_circ_phase_estimation(sce, tmeta,  rm_low_conf, period12
                                    "Num. not confident genes",  ...
                                    "Num. failed3 circadian"];
 
-    ftable_name = strcat("cell_genes_info",per_lab);
+    ftable_name = strcat("cell_genes_info", per_lab);
+    if ~isempty(cust_cells)
+        ftable_name = strcat(cust_cells,ftable_name);
+    end 
     ftable_name = strcat(ftable_name,"analysis.csv");
     writetable(T0, ftable_name);
     
